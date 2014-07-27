@@ -41,7 +41,7 @@ P600 [@Osterhout1992]: a window whose mean amplitude correlates with *syntactic*
 
 ## P600 follows syntactic violations
 
-![](/Users/jona/Dropbox/manuscripts/eeg/osterhout-p6.pdf)
+![](osterhout-p6.pdf)
 
 -> Falsifiable prediction: if the P600 follows something different, it does not mark syntax (?)
 
@@ -49,7 +49,7 @@ P600 [@Osterhout1992]: a window whose mean amplitude correlates with *syntactic*
 
 ## P600 follows *all kinds of stuff ...*
 
-\centerline{\includegraphics[height=2in]{/Users/jona/Dropbox/manuscripts/eeg/jakub-p6.pdf}}
+\centerline{\includegraphics[height=2in]{jakub-p6.pdf}}
 
 -> Hypothesis falsified? ... no ...
 
@@ -68,19 +68,19 @@ P600 [@Osterhout1992]: a window whose mean amplitude correlates with *syntactic*
 
 ## First, let's look at our P600 again
 
-![](/Users/jona/Dropbox/manuscripts/eeg/e-p600.pdf)
+![](e-p600.pdf)
 
 ---
 
 ## (Event-related) Galvanic Skin Response accompanies P600
 
-![](/Users/jona/Dropbox/manuscripts/eeg/e-gsr.pdf)
+![](e-gsr.pdf)
 
 ---
 
 ## Heart rate is correlated with P600 amplitude
 
-![](/Users/jona/Dropbox/manuscripts/eeg/e-heart.pdf)
+![](e-heart.pdf)
 
 Each time point shows the average correlation between the P600 amplitude (around its peak) and the heart rate at this time point
 
@@ -88,7 +88,7 @@ Each time point shows the average correlation between the P600 amplitude (around
 
 ## Single trial analysis: RT/component correlation
 
-![](/Users/jona/Dropbox/manuscripts/eeg/charybdis-rt.pdf)
+![](charybdis-rt.pdf)
 
 ERPimages visualise between-trial temporal variance
 
