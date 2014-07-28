@@ -107,4 +107,4 @@ Each horizontal line shows one trial
 ## Multilevel modelling
 ...
 
-## References
+## References {.allowframebreaks}
