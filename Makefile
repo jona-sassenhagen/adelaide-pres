@@ -1,4 +1,7 @@
 pdf: adpres.pdf
 
 adpres.pdf: adpres.md
-	pandoc adpres.md -o adpres.pdf -s -t beamer
+	pandoc -s -t beamer -o adpres.pdf adpres.md  
+	
+clean: 
+	rm -rf adpres.pdf
