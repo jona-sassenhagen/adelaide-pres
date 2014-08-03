@@ -104,7 +104,13 @@ Each horizontal line shows one trial
 
 # Part II: beyond the ANOVA
 
-## Multilevel modelling
-...
+--- 
 
-## References {.allowframebreaks}
+## Shake the cobwebs loose
+
+* all common parametric (and many nonparametric and resampling methods) based on two fundamental ideas:
+	- the linear model
+	- loss function based on Euclidean distance
+* classical methods for parameter estimatation often incompatible with repeated measures designs 
+
+## References {.allowframebreaks}	
