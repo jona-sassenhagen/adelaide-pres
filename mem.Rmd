@@ -13,25 +13,18 @@
 ```{r setup, include=FALSE}
 library(knitr); library(knitcitations)
 cite_options(tooltip = TRUE, link = TRUE)
-library(ggplot2)
-library(lme4)
-data(sleepstudy)
 ```
 
 ## Today's data: Sleep Study
 * `Reaction`: RT in ms
-* `Days`: day 0 is normal sleep baseline (interval da -> Numeric)
-* `Subject`: numbered (categorical, non ordinal -> Factor)
+* `Days`: day 0 is normal sleep baseline (interval, i.e. Numeric)
+* `Subject`: numbered (categorical, non ordinal, i.e. Factor)
 
 ## In R
-```{r sleepstudy, prompt=TRUE,eval=FALSE}
-# example data providedy by lme4
+```{r sleepstudy, prompt=TRUE,eval=TRUE}
 library(lme4)
 data(sleepstudy)
-# for more info, try ?sleepstudy
-library(lattice) # provides some nice plotting functions
-```
-```{r sleepstudy-run,prompt=TRUE,eval=TRUE}
+library(lattice) 
 str(sleepstudy)
 ```
 
@@ -39,14 +32,53 @@ str(sleepstudy)
 - timeo danaos et dona ferentes!
 - Relax, it'll be okay.
 
-## Back to basics
+# Back to basics
+
+## Statistical Primitives
+Basic methods all possible (if tedious) to calculate by hand:
+
+* linear regression (OLS)
+* $t$-test
+* $F$-test and AN(C)OVA
+* $\chi^2$-test, including LR-variant if you have a log-table
+* (correlations)
+
+## General linear model
+* just about everything in statistics based on the general linear model
+* $\chi^2$, $t$-test and its extension factorial ANOVA included 
+* $t$-test between groups thus fully equivalent to coefficient tests in linear regression
+* ANOVA (F-test) thus fully equivalant to test F-test for overall model fit in linear gression 
+
+## Repeated Measures
+* independence assumption violated in repeated measures
+* repeated measures ANOVA based on a convenient trick for the special case involving categorial predictors 
+* non trivial to extend this trick to ordinal or continuous predictors
+* r.m. ANOVA also restricted to modelling repetition in one dimension, while collapsing in all other dimensions
+	- traditionally separate $F_1$ (ANOVA by subjects) and $F_2$ (ANOVA by items) to model crossed random effects
+	- @clark1973a: combine these two tests into a single measure 
+* ANOVA sensitive to unbalanced designs and empty cells
+
+## Impasse
+* all the usual stuff can be expressed as a variant of (generalized) linear regression
+* except repeated measures ANOVA
+* so we have a choice
+	- a detailed, full model with lots of subjects and items 
+	- or
+	- ramming everything into a factorial model
+
+# What happens if we use linear regression on repeated measures data?
 
 ## Linear Regression
 ```{r linreg, prompt=TRUE,eval=TRUE,fig.cap="",tidy=FALSE}
 # simple scatter plot
-sleep.xy <- xyplot(Reaction~Days,data=sleepstudy,
+sleep.xy <- xyplot(Reaction ~ Days,data=sleepstudy,
                    xlab = "Days of sleep deprivation",
                    ylab = "Average reaction time (ms)")
+```
+
+---
+
+```{r, echo=FALSE,fig.cap=""}
 sleep.xy
 ```
 
@@ -70,21 +102,34 @@ sleep.xy
 
 ## Add a regression line with lattice graphics
 ```{r linreg-plot, prompt=TRUE, eval=TRUE,fig.cap=""}
-# update() effectively performs the previous call for us PLUS other options we add now
-sleep.xy <- update(sleep.xy,type=c("p","r")) # p for points, r for regression
+# p for points, r for regression
+sleep.xy <- update(sleep.xy,type=c("p","r")) 
+```
+
+---
+
+```{r, echo=FALSE,fig.cap=""}
 sleep.xy
 ```
 
-# Model summary
+## Model summary
+\small
 ```{r sleep.lm.summary, prompt=TRUE, eval=TRUE}
 summary(sleep.lm)
 ```
 
 # Not a great fit!
 
+## Sidebar: ANOVA
+\small
+```{r sleep.lm.anova, prompt=TRUE, eval=TRUE}
+anova(sleep.lm)
+```
+
+# But still not a great fit!
+
 ## Residuals for all data
 ```{r linreg-residuals, prompt=TRUE, eval=TRUE,fig.cap=""}
-# convenient lattice function for residuals
 rfs(sleep.lm)
 ```
 
