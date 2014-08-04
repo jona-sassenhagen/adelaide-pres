@@ -1,0 +1,302 @@
+% Mixed Effects Models
+% Phillip M. Alday
+% 05. August 2014
+
+
+<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" /></a><br /><span xmlns:dct="http://purl.org/dc/terms/" property="dct:title">Mixed Effects Models</span> by <span xmlns:cc="http://creativecommons.org/ns#" property="cc:attributionName">Phillip Alday</span> is licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+
+<!-- I make no guarantee about the accuracy or suitability of the content provided herein for any purpose. All code is provided AS IS without any warranty EXPRESSED nor IMPLIED. -->
+<!-- I'm a grad student trying to figure some things out and sharing what I think to know. -->
+
+---
+
+```{r setup, include=FALSE}
+library(knitr); library(knitcitations)
+cite_options(tooltip = TRUE, link = TRUE)
+library(ggplot2)
+library(lme4)
+data(sleepstudy)
+```
+
+## Today's data: Sleep Study
+* `Reaction`: RT in ms
+* `Days`: day 0 is normal sleep baseline (interval da -> Numeric)
+* `Subject`: numbered (categorical, non ordinal -> Factor)
+
+## In R
+```{r sleepstudy, prompt=TRUE,eval=FALSE}
+# example data providedy by lme4
+library(lme4)
+data(sleepstudy)
+# for more info, try ?sleepstudy
+library(lattice) # provides some nice plotting functions
+```
+```{r sleepstudy-run,prompt=TRUE,eval=TRUE}
+str(sleepstudy)
+```
+
+## A quick warning
+- timeo danaos et dona ferentes!
+- Relax, it'll be okay.
+
+## Back to basics
+
+## Linear Regression
+```{r linreg, prompt=TRUE,eval=TRUE,fig.cap="",tidy=FALSE}
+# simple scatter plot
+sleep.xy <- xyplot(Reaction~Days,data=sleepstudy,
+                   xlab = "Days of sleep deprivation",
+                   ylab = "Average reaction time (ms)")
+sleep.xy
+```
+
+## Make a linear model
+* basic line, no error term: $y = mx + b$
+* dep = slope*indep + baseline.offset
+* outcome = (model) + error
+
+
+## Fit a line
+* Fit a line to observed data with magic and matrices:
+    * $Y = \beta_{1}X + \beta_{0} + \epsilon$
+    * $Y =  \beta_{2}X + \beta_{1}X + \beta_{0} + \epsilon$
+    * $Y =  \beta_{3}X + \beta_{2}X + \beta_{1}X + \beta_{0} + \epsilon$
+    * ...
+* R has this built in:
+    ```{r sleep.lm, prompt=TRUE, eval=TRUE}
+    sleep.lm <- lm(Reaction~Days,data=sleepstudy)
+    ```
+* additional predictors with `+` (no interaction) or `*` (interaction)
+
+## Add a regression line with lattice graphics
+```{r linreg-plot, prompt=TRUE, eval=TRUE,fig.cap=""}
+# update() effectively performs the previous call for us PLUS other options we add now
+sleep.xy <- update(sleep.xy,type=c("p","r")) # p for points, r for regression
+sleep.xy
+```
+
+# Model summary
+```{r sleep.lm.summary, prompt=TRUE, eval=TRUE}
+summary(sleep.lm)
+```
+
+# Not a great fit!
+
+## Residuals for all data
+```{r linreg-residuals, prompt=TRUE, eval=TRUE,fig.cap=""}
+# convenient lattice function for residuals
+rfs(sleep.lm)
+```
+
+## Residuals for a single subject
+```{r linreg-residuals-vp1, prompt=TRUE, eval=TRUE,fig.cap="",tidy=FALSE}
+sleep.lm.vp1 <- lm(Reaction ~ Days,
+                   data=sleepstudy[sleepstudy$Subject=="308",])
+rfs(sleep.lm.vp1)
+```
+
+## Models for single subjects
+```{r linreg-bysubject, prompt=TRUE, eval=TRUE,fig.cap="",tidy=FALSE}
+sleep.xy.bysubj <- xyplot(Reaction ~ Days|Subject,
+                          data=sleepstudy,
+                          xlab = "Days of sleep deprivation",
+                          ylab = "Average reaction time (ms)")
+sleep.xy.bysubj
+````
+
+## With regression lines
+```{r linreg-bysubject-lines, prompt=TRUE, eval=TRUE,fig.cap=""}
+sleep.xy.bysubj <- update(sleep.xy.bysubj,type=c("p","r"))
+sleep.xy.bysubj
+```
+
+## Variance and Repeated Measures
+* Inter- and Intra- variance
+* random jitter from our choice of sample population
+* each subject fulfills a certain "condition", but random error pro instance of the condition
+* similar idea for item analysis in linguistic designs
+
+## Fixed vs Random Effects
+* Model subjects as fixed effect?
+    * only when we want to make intrasample predictions
+    * i.e. sample==population
+    * fixed means known variance / manipulation
+    * fixed-effects: directed, preferably "exhaustive" manipulation
+
+## Fixed vs Random Effects
+* Model subjects as random effects?
+    * "random" means unknown variance
+    * error term is a random effect
+    * correction for the error resulting from our particular choice of sample
+    * correction per grouping for slope and intercept possible
+    * error term per grouping!
+
+## Mixed Effects Models
+* "Mixed" because both fixed random effects are used
+* Same basic formula syntax `dep ~ indep | group`
+* additional `(indep|group)` terms for random effects
+    ```{r sleep.lmer, prompt=TRUE, eval=TRUE,tidy=FALSE}
+        sleep.lmer <- lmer(Reaction ~ Days + (1|Subject),
+                            data=sleepstudy)
+    ```
+* More info [here](http://stats.stackexchange.com/questions/18428/formula-symbols-for-mixed-model-using-lme4/61466), [here](http://stats.stackexchange.com/questions/13166/rs-lmer-cheat-sheet/13173), and [here](http://stackoverflow.com/questions/16313109/is-there-a-better-reference-for-r-formulas-than-formula)
+```{r formula.help, prompt=TRUE, eval=FALSE,tidy=FALSE}
+    ?formula
+```
+
+## Model Summary
+```{r sleep.lmer.summary, prompt=TRUE, eval=TRUE}
+    summary(sleep.lmer)
+```
+
+## Fixed effect structure
+* Package `ez`
+    * `ezMixed()` as a convenience for exploring fixed effects
+    * `ezPredict()` useful for plotting regression lines
+* Package `effects`
+* Package `lmerTest`
+* Package `languageR`
+* Package `LMERConvenienceFunctions`
+* Package `lmtest`
+* (example and special purpose code from Phillip)
+
+## Random effect structure
+* combine by-subject and by-item analyses in one step
+* cf. @clark1973a
+
+## Random effect structure 
+* Early idea: build up from minimal structure until improvements don't bring you anything on ANOVA `r citep("http://dx.doi.org/10.1016%2Fj.jml.2007.12.005")`
+* New idea: Use the most complicated random effects structure possible `r citep("http://dx.doi.org/10.1016%2Fj.jml.2012.11.001")`
+
+## Random effect structure
+* Possible random effect structures for ONE fixed factor:
+    1. Intercepts only by random factor: </br>
+        `(1 | random.factor)`
+    2. Slopes only by random factor: </br>
+        `(0 + fixed.factor | random.factor)`
+    3. Intercepts and slopes by random factor: </br>
+        `(1 + fixed.factor | random.factor)`
+    4. Intercept and slope, separately, by random factor: </br>
+        `(1 | random.factor) + (0 + fixed.factor | random.factor)`
+
+## Models
+```{r sleep.lmer.randeff, prompt=TRUE, eval=TRUE,results="hide",tidy=FALSE}
+# REML is a "shortcut" that invalidates anova()
+sleep.lmer <- update(sleep.lmer,REML=FALSE)
+# same as (Days|Subject)
+sleep.lmer.slopes <- lmer(Reaction ~ Days + (1+Days|Subject),
+                           data=sleepstudy,REML=FALSE)
+sleep.lmer.slopes.int <- lmer(Reaction ~ Days + (1|Subject) +
+                               (0+Days|Subject),
+                               data=sleepstudy,REML=FALSE)
+```
+
+## Comparing Models
+``` {r sleep.lmer.anova, prompt=TRUE, eval=TRUE}
+    # can only be used for nested models!
+    anova(sleep.lmer,sleep.lmer.slopes, sleep.lmer.slopes.int)
+```
+
+## Judging Fit
+* `anova()` function for `lmer()` provided for convenience and parallel to `lm()`
+* $\chi^2$ comparisons valid ONLY for nested models
+* use AIC or BIC otherwise
+    * no absolute good or bad
+    * "smaller is better"
+    * hard to determine what a significant difference is
+    * [tips](http://stats.stackexchange.com/questions/8557/testing-the-difference-in-aic-of-two-non-nested-models) [on AIC](http://stats.stackexchange.com/questions/25942/will-aic-and-r-square-rank-models-similarly-if-the-number-of-variables-is-equal)
+* Use `REML=FALSE` when comparing models!
+
+## Relationship to ANOVA
+* `ezANOVA()` depends on `aov()` which depends on `lm()`
+* `anova()` can be used to compare existing `lm()`s
+* linear models compared with $F$ and $t$ tests
+* no continuous predictors with ANOVA
+* ANOVA works on per-subject item averages and examines variance over subjects for each condition
+* MEMs work at an individual trial level and can accomodate empty cells and unbalanced designs!
+
+::vnext::
+
+## `ezANOVA()`
+```{r ezANOVA, prompt=TRUE, eval=TRUE,tidy=FALSE}
+# hide startup output
+suppressPackageStartupMessages(library(ez))
+sleep.ez <- ezANOVA(sleepstudy,
+                    dv=.(Reaction),
+                    wid=.(Subject),
+                    within=.(Days),
+                    detailed=TRUE,
+            # we'll take a look at the aov() in a sec
+                    return_aov=TRUE) 
+sleep.ez$ANOVA
+```
+
+## `aov()` from `ezANOVA()`
+```{r ezANOVA.aov, prompt=TRUE, eval=TRUE}
+sleep.ez$aov
+```
+
+## formula from `aov()` from `ezANOVA()` 
+```{r ezANOVA.aov.formula, prompt=TRUE, eval=TRUE}
+aov.formula <- formula(attr(sleep.ez$aov,"terms"))
+print(aov.formula,showEnv=FALSE)
+```
+
+## Possible warning messages
+* Convergence warnings: you don't have enough data for the proposed model structure
+* Singular: perfect multicollinearity (at least one variable is linear combination of the others)
+* Not positive definite: matrix not greater than "zero"; too much correlation / collinearity, not enough data
+
+## Extensions of linear models to non-linear data
+* traditional linear models can be extended to model other types of data such as binary (e.g. yes/no responses)
+* basically works by strapping a transformation (link function) onto the front and back ends -- R does this for you!
+* fixed effects: `glm()`
+* mixed effects: `glmer()`
+
+## Family types
+* binomial: (aka logistic regression) `binary ~ continuous`
+* Gaussian: (normal linear regression) `continuous ~ continuous` and `continuous ~ categegorial`
+* Gamma: `continuous ~ exp(continuous)` (exponential response)
+* Poisson: `count ~ continuous`
+* (inverse.gaussian, quasi, quasibinomial, quasipoisson)
+
+## Binomial models
+* casuality of grouping
+    * traditional t-test vs. detection prediction
+    * Johannes' data
+* existence / evidence for *a priori* categories 
+    * connecting theory and empiry 
+    * difficult vs non difficult violations
+* `behavioral ~  eeg`
+    * performance (cf. `r citet("10.3389/fpsyg.2011.00365")`
+    * anomaly detection 
+    * Sarah's data
+
+## (More) References {.allowframebreaks}	
+* [Stack Exchange](http://stackoverflow.com/) and [Cross Validated](http://stats.stackexchange.com/)
+    * [`lmer` Tag](http://stats.stackexchange.com/questions/tagged/lmer)
+    * [`mixed model` Tag](http://stats.stackexchange.com/questions/tagged/mixed-model)
+    * [`lme4` Tag](http://stackoverflow.com/questions/tagged/lme4)
+* [GLM](https://en.wikipedia.org/wiki/Generalized_linear_model) [Families](http://www.statmethods.net/advstats/glm.html)
+* Especially relevant questions
+    * [Residuals for Binomial GLM](http://stats.stackexchange.com/questions/63566/unexpected-residuals-plot-of-mixed-linear-model-using-lmer-lme4-package-in-r)
+    * [Comparing non-nested models](http://stats.stackexchange.com/questions/8513/test-equivalence-of-non-nested-models)
+* [Florian Jaeger's blog](http://hlplab.wordpress.com/tag/lmer/)
+* Jonathan Harrington (phonetics prof. in Munich):
+    * [Mixed Models](http://www.phonetik.uni-muenchen.de/~jmh/lehre/sem/ws1213/Rspeech/mm.pdf) (in German)
+    * [Generalized Linear Mixed Models](http://www.phonetik.uni-muenchen.de/~jmh/lehre/sem/ss11/statfort/glmm.pdf) (in English)
+* [Tutorial for sociolinguists](http://www2.hawaii.edu/~kdrager/MixedEffectsModels.pdf)
+* [lmer, p-values and all that](https://stat.ethz.ch/pipermail/r-help/2006-May/094765.html)
+* [Understanding `glmer()`output](https://stat.ethz.ch/pipermail/r-sig-mixed-models/2011q1/015591.html)
+* Package `nlme` [(older, more specialized MEM implementation)](http://stats.stackexchange.com/questions/5344/how-to-choose-nlme-or-lme4-r-library-for-mixed-effects-models), see also [here](http://www.opensubscriber.com/message/r-help@stat.math.ethz.ch/5174171.html)
+* Tutorial from `lme4` coauthor: `r citep("http://dx.doi.org/10.1016%2Fj.tree.2008.10.008")`
+* Modelling interindividual differences via  mixed models
+    * [@klieglweidambacher2010a]
+    * [@roehmsoracebornkessel-schlesewsky2012a]
+* In corpus linguistics / dialectology: [@wielingnerbonnebaayen2011a]
+
+## More Academic Bibliography {.allowframebreaks}
+```{r, echo=FALSE, results='asis'}
+#print("placeholder")
+# bibliography("html")
+```

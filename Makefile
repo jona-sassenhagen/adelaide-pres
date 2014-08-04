@@ -5,13 +5,13 @@ refs = adpres.bib
 
 pdf: adpres.pdf
 
-adpres.pdf: adpres.md
-ifndef LEGACY
-	pandoc -s -t beamer --bibliography=adpres.bib adpres.md -o adpres.pdf  
-else
-	adpres.pdf: adpres.md
-		pandoc -s -t beamer --template=my.beamer --bibliography=adpres.bib adpres.md -o adpres.pdf  
-endif
+mem: mem.pdf
+
+%.pdf: %.md
+	pandoc -s -t beamer $(if $(LEGACY), --template=my.beamer) --bibliography=$*.bib $*.md -o $*.pdf  --slide-level=2
+
+%.md: %.Rmd 
+	echo 'knitr::knit("$*.Rmd")' | R --vanilla
 	
 clean: 
 	rm -rf adpres.pdf
