@@ -47,7 +47,7 @@ Basic methods all possible (if tedious) to calculate by hand:
 * just about everything in statistics based on the general linear model
 * $\chi^2$, $t$-test and its extension factorial ANOVA included 
 * $t$-test between groups thus fully equivalent to coefficient tests in linear regression
-* ANOVA (F-test) thus fully equivalant to test F-test for overall model fit in linear gression 
+* ANOVA ($F$-test) thus fully equivalant to test $F$-test for overall model fit in linear gression 
 
 ## Repeated Measures
 * independence assumption violated in repeated measures
@@ -346,13 +346,15 @@ Anova(sleep.lmer.slopes)
     * connecting theory and empiry 
     * difficult vs non difficult violations
 * `behavioral ~  eeg`
-    * performance (cf. `r citet("10.3389/fpsyg.2011.00365")`
+    * performance [cf. @vanrullen2011a]
     * anomaly detection 
-    * Sarah's data
+
 
 ## Even more advanced extensions
 * [General additive models](http://www3.nd.edu/~mclark19/learn/GAMS.pdf) extend linear models to arbitrary smooth functions
 * Variants also available for mixed effects: generalized additive mixed models, implemented in R with the [`gamm4`](http://cran.r-project.org/web/packages/gamm4/index.html) package
+
+# That's it, but I've added a bunch of further reading after this slide...
 
 ## (More) References {.allowframebreaks}	
 * [FAQ](http://glmm.wikidot.com/faq) from the mailing list (lots to absorb at first, but a good place to keep going back to)
