@@ -7,8 +7,8 @@ pdf: adpres.pdf
 
 mem: mem.pdf
 
-%.pdf: %.md
-	pandoc -s -t beamer $(if $(LEGACY), --template=my.beamer) --bibliography=$*.bib $*.md -o $*.pdf  --slide-level=2
+%.pdf: %.md %.bib
+	pandoc -s -i -t beamer $(if $(LEGACY), --template=my.beamer) --bibliography=$*.bib $*.md -o $*.pdf  --slide-level=2
 
 %.md: %.Rmd 
 	echo 'knitr::knit("$*.Rmd")' | R --vanilla
